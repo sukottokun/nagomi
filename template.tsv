@@ -1,0 +1,29 @@
+Milestone	Task	Owner	Done when	Status	Days left	Notes			Depends on	Done on	Chain
+1. Kickoff & Hosting	Hosting account and developer access	Woo SA	Agency can deploy to staging	Not Started	1						
+1. Kickoff & Hosting	Staging and production sites	Woo SA	Both sites live on Pressable	Not Started	1						
+1. Kickoff & Hosting	Client admin users	Agency	Client team can log in to staging	Not Started	0.5						
+1. Kickoff & Hosting	DNS owner confirmed	Client IT	DNS owner and access confirmed	Not Started	0.5						
+2. Theme & Design	Theme and child theme	Agency	Child theme active on staging	Not Started	2						
+2. Theme & Design	Design sign-off	Client	Client signs off on the staging look	Not Started	1						
+3. Product Setup	Product import	Agency	All migrating SKUs on staging	Not Started	3						Y
+3. Product Setup	Categories	Agency	Category tree on staging matches the agreed structure	Not Started	1						
+3. Product Setup	Product content review	Client	Client has checked products on staging	Not Started	3						
+4. Store Setup	Plugin list	Woo SA	Plugins agreed and licensed	Not Started	1						
+4. Store Setup	Payments	Woo SA	Test order completes with each payment method	Not Started	2						Y
+4. Store Setup	Shipping	Agency	Shipping methods and rates match the scoping sheet	Not Started	1						
+4. Store Setup	Tax	Agency	Checkout tax matches the tax provider for a test address	Not Started	1						
+4. Store Setup	Accounts and checkout fields	Agency	Buyer login and checkout fields work as scoped	Not Started	2						
+5. Integrations	[One row per system on the Integration Map]	Agency	Test record flows both ways as mapped	Not Started	3						Y
+5. Integrations	Flows validated	Client	Flows in this sheet confirmed by the client	Not Started	1						
+6. Testing	HPOS	Woo SA	HPOS enabled with compatibility sync off	Not Started	0.5						
+6. Testing	Buying path test (UAT)	Client	Every flow in this sheet passes on staging	Not Started	3						Y
+6. Testing	Load and performance test	Woo SA	Staging handles target load with no errors	Not Started	2						
+6. Testing	Final review (Query Monitor, plugin audit)	Woo SA	No slow queries or unused plugins	Not Started	1						
+6. Testing	Security review	Woo SA	PCI scope documented and agreed	Not Started	1						
+6. Testing	Project buffer	Woo SE	Launch on target with buffer left	Not Started	[half the padding cut from chain tasks]						Y
+7. Launch	Monitoring and alerting	Woo SA	Uptime and error alerts reach the team	Not Started	1						
+7. Launch	Cutover and rollback plan	Woo SA	Written plan rehearsed on staging	Not Started	2						Y
+7. Launch	DNS change	Client IT	Store domain resolves to production	Not Started	1						Y
+7. Launch	Woo Enterprise support setup	Woo SE	Client can open support tickets	Not Started	1						
+8. Post-Launch	7- and 14-day check-ins	Woo SE	Both held; issues logged	Not Started	1						
+8. Post-Launch	Survey and closeout	Woo SE	Survey sent; project closed	Not Started	1						

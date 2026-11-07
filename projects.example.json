@@ -1,0 +1,15 @@
+{
+  "ExampleCo": {
+    "sheet": "<scoping sheet id>",
+    "p2": "<deal P2 post URL>",
+    "launch": "YYYY-MM-DD",
+    "buffer": 10,
+    "email": [
+      "customer.com",
+      "agency.com"
+    ],
+    "off": [
+      "YYYY-MM-DD"
+    ]
+  }
+}
