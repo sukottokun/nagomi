@@ -60,6 +60,16 @@ Standard milestones (every Woo build): Kickoff & Hosting · Theme & Design · Pr
 
 Propose Days left at 50/50 for every open task that has none; check_plan lists them under "No estimate". Size the buffer at about half the padding cut, and set the launch date as today + chain + buffer in working days. When an owner's update changes Days left, re-run the check; don't re-estimate a task someone else set.
 
+**Before a plan exists** ("estimate the build for <Company>"): draft the Job 1 rows and Depends on from the scoping sheet, run them through `check_plan.schedule()` in the scratchpad without touching the sheet or `projects.json`, and report in the CLI: a table by milestone (days per owner, date window), chain days, buffer, launch date, the chain in order, and the constraint owner's load. Count US holidays and the year-end break as off days.
+
+**Confidence.** Tag each chain task by where its estimate came from: *Sized* (the agency's hours on the Site Build tab, or the owner said so), *Inferred* (Claude sized it from the Integration Map or Discovery), or *Default* (`template.tsv`). Report the share of chain days in each bucket, then list the open items in Discovery, Integration Map or Notes that could move a chain task, biggest swing first. Rate the estimate:
+
+- **High:** at least 70% of chain days are Sized, and no open item touches the chain.
+- **Medium:** at least 40% Sized, and the open items each move one task.
+- **Low:** anything less, or an open item that adds or removes chain work (an undecided system, a missing access, unknown data volumes).
+
+Give the launch as a range: the 50/50 date (chain + buffer), and a likely-late date that adds the swing items' extra days. Say what would raise the rating, and who to ask.
+
 ## Job 3: Order the work
 
 `check_plan.py` schedules the open work: a task starts once everything in its Depends on is done, each owner does one task at a time, and the task with the longest path left behind it goes first. The critical chain is the longest path through that schedule, so it counts both the hand-offs and the owner's queue. With no Depends on entries, the chain is just the busiest owner's queue, which is usually the agency developer.

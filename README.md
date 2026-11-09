@@ -59,6 +59,7 @@ Each of these has to be in place before Nagomi can run a project.
 
 Ask Nagomi in Claude Code:
 
+- "estimate the build for <Company>": a dry-run estimate with a confidence rating, before any plan is written
 - "project status for <Company>" or "what's at risk on <Company>"
 - "what order should we do this in"
 - "sweep updates for <Company>"
