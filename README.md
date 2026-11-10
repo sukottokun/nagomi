@@ -2,7 +2,7 @@
 
 Nagomi (和み) is the AI project manager for WooEnterprise store builds. The goal is a harmonious store build and launch, using AI, open communication and trust.
 
-Nagomi does a PM's job on a build that doesn't have one. It keeps the estimate honest, works out the order of the work, says where the project stands and what's at risk, and gathers everyone's updates so nobody has to chase them. It runs as a Claude Code skill (`SKILL.md`) plus a small script (`check_plan.py`) that reads the plan and does the math.
+Nagomi does a PM's job on a build that doesn't have one. It keeps the estimate honest, works out the order of the work, says where the project stands and what's at risk, and gathers everyone's updates so nobody has to chase them. It's a Claude Code plugin: a skill (`skills/wooenterprise-ai-project-management/SKILL.md`), a small script (`check_plan.py`) that reads the plan and does the math, and `/nagomi:` commands for each job.
 
 The plan lives in the customer's scoping sheet as a `Project Plan` tab, next to the Technical Scoping, Integration Map and Data Flow tabs it's built from. The agency and the customer can both edit it, and it replaces Asana and Linear for the build. Anyone can update their own rows there, or just say it in the project Slack channel or by email.
 
@@ -45,7 +45,7 @@ Each of these has to be in place before Nagomi can run a project.
 4. **The Integration Map is filled in.** Nagomi adds one Integrations row per real system on it, so do it before building the plan.
 5. **The sheet is shared** with edit access for the agency and the customer's project owner.
 6. **Build the plan.** In Claude Code, say "build a project plan for <Company>". Nagomi fills in the starter tasks, proposes owners, estimates and Depends on, and shows you the plan before it writes anything. Approve the Depends on list, then let it write.
-7. **Add the project to `projects.json`** (Nagomi does this as part of step 6). Copy the shape from `projects.example.json`:
+7. **Add the project to `~/.nagomi/projects.json`** (Nagomi does this as part of step 6). Copy the shape from `projects.example.json`:
    - `sheet`: the scoping sheet ID
    - `p2`: the deal P2 URL
    - `launch`: the launch date
@@ -57,28 +57,36 @@ Each of these has to be in place before Nagomi can run a project.
 
 ## Running it
 
-Ask Nagomi in Claude Code:
+Use the commands, or just ask in plain words:
 
-- "estimate the build for <Company>": a dry-run estimate with a confidence rating, before any plan is written
-- "project status for <Company>" or "what's at risk on <Company>"
-- "what order should we do this in"
-- "sweep updates for <Company>"
-- "update the project plan after my call with <Company>"
+- `/nagomi:estimate <Company>`: a dry-run estimate with a confidence rating, before any plan is written
+- `/nagomi:plan <Company>`: build the Project Plan in the scoping sheet
+- `/nagomi:order <Company>`: the order of the work and the critical chain
+- `/nagomi:status [Company]`: where it stands and what's at risk
+- `/nagomi:sweep [Company]`: pick up updates from the P2, Slack, email, calls and sheet edits
 
-Or run the script directly:
+Or run the script directly (it lives in the installed skill's folder):
 
 ```
-python3 check_plan.py                     # digest for every project
+python3 check_plan.py                        # digest for every project
 python3 check_plan.py ExampleCo --changes    # one project, plus sheet edits since the last --save
-python3 check_plan.py --save              # save a snapshot
-python3 check_plan.py --email you@x.com   # also email the digest
+python3 check_plan.py --save                 # save a snapshot
+python3 check_plan.py --email you@x.com      # also email the digest
 ```
 
-For the daily sweep, run `sh install-daily.sh` once from your own shell. It installs a launchd job that runs the sweep headless with `claude -p` at 7:30am on weekdays and emails you the digest. `install-daily.sh --digest-only` installs a script-only email with no Slack or email sweep.
+For the daily sweep, run `sh install-daily.sh you@example.com` once from your own shell. It installs a launchd job that runs the sweep headless with `claude -p` at 7:30am on weekdays and emails you the digest. `install-daily.sh --digest-only you@example.com` installs a script-only email with no Slack or email sweep; re-run it after a plugin update.
+
+## Install
+
+```
+/plugin marketplace add sukottokun/nagomi
+/plugin install nagomi@nagomi
+```
+
+Your projects and snapshots live in `~/.nagomi/` (`projects.json` and `state/`), outside the plugin, so updates never touch them. Set `NAGOMI_HOME` to keep them somewhere else.
 
 ## Setup
 
-- [Claude Code](https://claude.com/claude-code), with this repo linked as a skill: `ln -s ~/Code/nagomi ~/.claude/skills/wooenterprise-ai-project-management`
 - The `gws` CLI, signed in (`gws auth login`), for the sheet and the digest email
 - Connectors for Slack, Gmail, Zoom and context-a8c (for the P2)
 - Skills from gtm-skills: `admin-call-sourcing`, `admin-customer-drive-folder`, `gtm-discover-p2-notes`, `my-writing-style`

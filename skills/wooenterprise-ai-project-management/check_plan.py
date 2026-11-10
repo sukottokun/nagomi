@@ -7,7 +7,7 @@ health, the chain in order, each owner's next tasks, blocked work, missing
 estimates or owners, and sheet edits since the last saved snapshot.
 
 Usage:
-  check_plan.py                      digest for all projects in projects.json
+  check_plan.py                      digest for all projects in ~/.nagomi/projects.json
   check_plan.py ExampleCo               one project
   check_plan.py --changes            also list sheet edits since the last --save
   check_plan.py --save               save a snapshot for the next --changes
@@ -15,8 +15,9 @@ Usage:
 """
 import argparse, datetime as dt, json, math, os, subprocess, sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-STATE = os.path.join(HERE, "state")
+# Per-user data lives outside the plugin, so updates never touch it.
+DATA = os.path.expanduser(os.environ.get("NAGOMI_HOME", "~/.nagomi"))
+STATE = os.path.join(DATA, "state")
 TAB = "Project Plan"
 MAX_IN_PROGRESS = 2  # critical chain: one task at a time, two at most
 KEYS = ("milestone", "task", "owner", "done when", "status", "chain", "days left", "done on", "depends on", "notes")
@@ -240,7 +241,10 @@ def main():
     ap.add_argument("--changes", action="store_true")
     ap.add_argument("--save", action="store_true")
     a = ap.parse_args()
-    projects = json.load(open(os.path.join(HERE, "projects.json")))
+    path = os.path.join(DATA, "projects.json")
+    if not os.path.exists(path):
+        sys.exit(f"No projects yet: create {path} (see projects.example.json next to this script).")
+    projects = json.load(open(path))
     if a.project:
         projects = {a.project: projects[a.project]}
     today = dt.date.today()

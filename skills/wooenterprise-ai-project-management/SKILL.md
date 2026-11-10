@@ -1,6 +1,6 @@
 ---
 name: wooenterprise-ai-project-management
-description: "WooEnterprise AI-project Management. Does the PM's job on a Woo Enterprise build without a PM, inside the customer's own scoping sheet (a 'Project Plan' table), using Critical Chain. Five jobs: (1) build the plan from the scoping sheet plus the standard Woo milestone template, (2) estimate time left with 50/50 estimates and one shared buffer, (3) work out the order of the work and the critical chain from Depends on and who does each task, (4) summarize where the project stands and what's at risk, (5) sweep updates from the deal P2, the Slack channel named on it, Scott's email, calls, and edits people make in the sheet, then email Scott the digest. Triggers on: 'build a project plan for [company]', 'project status', 'PM check', 'how's the buffer', 'what's at risk on [company]', 'what order should we do this in', 'sweep updates for [company]', 'update the project plan after my call with [company]', 'what are the remaining steps for [company]'."
+description: "WooEnterprise AI-project Management. Does the PM's job on a Woo Enterprise build without a PM, inside the customer's own scoping sheet (a 'Project Plan' table), using Critical Chain. Five jobs: (1) build the plan from the scoping sheet plus the standard Woo milestone template, (2) estimate time left with 50/50 estimates and one shared buffer, (3) work out the order of the work and the critical chain from Depends on and who does each task, (4) summarize where the project stands and what's at risk, (5) sweep updates from the deal P2, the Slack channel named on it, the user's email, calls, and edits people make in the sheet, then email the user the digest. Triggers on: 'build a project plan for [company]', 'project status', 'PM check', 'how's the buffer', 'what's at risk on [company]', 'what order should we do this in', 'sweep updates for [company]', 'update the project plan after my call with [company]', 'what are the remaining steps for [company]'."
 ---
 
 # WooEnterprise AI-project Management
@@ -9,11 +9,11 @@ The goal is to do a PM's job without a PM: keep the estimate honest, work out th
 
 The plan lives in the customer's scoping sheet as a `Project Plan` table, next to the scoping, integration and flow tabs it's built from. Google Sheets is shareable with the agency and the customer, and it replaces Asana and Linear for the build. Everyone can update their own rows there, or just say it in the project Slack channel or email. The sheet's `How to use` tab explains the method to everyone; keep it in sync with this file.
 
-Edit sheets in place with `gws` (never create a copy). Load `my-writing-style` for any prose. Keep notes lean: no vacations, scheduling chatter, or detail that doesn't change the work.
+`check_plan.py`, `template.tsv`, `install-daily.sh` and `projects.example.json` sit in this skill's base directory; run the script by that full path. Edit sheets in place with `gws` (never create a copy). Load `my-writing-style` for any prose. Keep notes lean: no vacations, scheduling chatter, or detail that doesn't change the work.
 
 ## Never override a person's edit
 
-People edit the sheet for a reason. If someone changed or cleared a cell, or deleted a row, since the last snapshot, don't overwrite it and don't add back what was there, even if Slack, email or the schedule says otherwise. Warn Scott in the digest and let him decide. The same goes for values the script computes: a computed chain that disagrees with the Chain column is a suggestion, not a write.
+People edit the sheet for a reason. If someone changed or cleared a cell, or deleted a row, since the last snapshot, don't overwrite it and don't add back what was there, even if Slack, email or the schedule says otherwise. Warn the user in the digest and let them decide. The same goes for values the script computes: a computed chain that disagrees with the Chain column is a suggestion, not a write.
 
 ## Philosophy: Critical Chain
 
@@ -46,7 +46,7 @@ New fields go in the PM group unless the team needs to act on them. The script f
 
 Standard milestones (every Woo build): Kickoff & Hosting · Theme & Design · Product Setup · Store Setup · Integrations · Testing · Launch · Post-Launch. Starter tasks, chain flags and default estimates are in `template.tsv`.
 
-`projects.json` holds each project: `"Company": {"sheet": "<id>", "p2": "<post URL>", "launch": "YYYY-MM-DD", "buffer": <days>, "email": ["customer.com", "agency.com"], "off": ["YYYY-MM-DD", ...]}`. `off` lists non-working dates (holiday breaks) so they don't count as buffer. The deal P2 (`gtm-discover-p2-notes`) is the source for everything else about the project, including the Slack channel in its top block.
+`~/.nagomi/projects.json` holds each project (per user, outside the plugin, so updates never touch it; `state/` snapshots live next to it; `projects.example.json` in this skill's directory shows the shape): `"Company": {"sheet": "<id>", "p2": "<post URL>", "launch": "YYYY-MM-DD", "buffer": <days>, "email": ["customer.com", "agency.com"], "off": ["YYYY-MM-DD", ...]}`. `off` lists non-working dates (holiday breaks) so they don't count as buffer. The deal P2 (`gtm-discover-p2-notes`) is the source for everything else about the project, including the Slack channel in its top block.
 
 ## Job 1: Build a plan
 
@@ -74,13 +74,13 @@ Give the launch as a range: the 50/50 date (chain + buffer), and a likely-late d
 
 `check_plan.py` schedules the open work: a task starts once everything in its Depends on is done, each owner does one task at a time, and the task with the longest path left behind it goes first. The critical chain is the longest path through that schedule, so it counts both the hand-offs and the owner's queue. With no Depends on entries, the chain is just the busiest owner's queue, which is usually the agency developer.
 
-1. Propose Depends on for open tasks: real hand-offs only (connector installed before it's configured; pricing synced before quotes; everything feeding UAT; UAT before cutover; cutover before DNS). Show them as a list and write them only after Scott approves.
+1. Propose Depends on for open tasks: real hand-offs only (connector installed before it's configured; pricing synced before quotes; everything feeding UAT; UAT before cutover; cutover before DNS). Show them as a list and write them only after the user approves.
 2. Run the check and report the chain in order, with dates, and each owner's next two tasks.
-3. Where the computed chain disagrees with the Chain column, report it. Scott decides whether to change the column.
+3. Where the computed chain disagrees with the Chain column, report it. The user decides whether to change the column.
 
 ## Job 4: Summarize status and risk
 
-Run `python3 ~/Code/nagomi/check_plan.py [Company] --changes` for the numbers, then write the summary on top. Keep it under 120 words:
+Run `python3 <this skill's base directory>/check_plan.py [Company] --changes` for the numbers, then write the summary on top. Keep it under 120 words:
 
 - **Where it stands:** buffer color, % used, the projected chain finish against launch, and what got done since the last check.
 - **At risk (top 3):** blocked chain tasks; chain tasks waiting on an open decision in Notes; an owner with more than two tasks in progress (the switching cost lands on the chain); open tasks with no estimate or owner; a side path long enough to overtake the chain (e.g. punchout feeding UAT).
@@ -97,13 +97,13 @@ Run for one project, or every project in `projects.json`. Since the last sweep (
 3. **Slack:** read that channel with `slack_read_channel`, and its threads with `slack_read_thread`.
 4. **Email:** Gmail `search_threads` for `from:(<domains>) OR to:(<domains>) after:<date>` using the project's `email` domains, plus the company name.
 5. **Calls:** any call with the customer or agency not already on the P2 Timeline, via `admin-call-sourcing`.
-6. **Map each update to a row:** Status, Days left, Done on, Notes. A clear statement from the owner ("pricing sync is done", "two more days on quotes") is a write. Anything fuzzy, or from someone other than the owner, is a question for Scott. New work, owner changes, Done when changes and new dependencies are always questions.
+6. **Map each update to a row:** Status, Days left, Done on, Notes. A clear statement from the owner ("pricing sync is done", "two more days on quotes") is a write. Anything fuzzy, or from someone other than the owner, is a question for the user. New work, owner changes, Done when changes and new dependencies are always questions.
 7. **Write** the clear updates in one `values batchUpdate`, skipping any cell or row that changed in step 1. If a skipped update conflicts with a person's edit, list both under "Needs your call".
-8. Run `check_plan.py <Company> --save`, then email Scott the Job 4 summary, a "Written" list (cell, before -> after, source), "Needs your call", and the script output. Use `gws gmail +send` or the Gmail connector.
+8. Run `check_plan.py <Company> --save`, then email the user the Job 4 summary, a "Written" list (cell, before -> after, source), "Needs your call", and the script output. Use `gws gmail +send` or the Gmail connector.
 
 ## Channel post
 
-After a sweep, draft a post for the project Slack channel and show it to Scott. Post only after he approves; the channel includes the customer and the agency. Format:
+After a sweep, draft a post for the project Slack channel and show it to the user. Post only after they approve; the channel includes the customer and the agency. Format:
 
 ```
 🤖😰 **The AI Project Manager Update for <date>**
@@ -124,10 +124,10 @@ Use real Slack mentions (`<@USERID>`). Customer and agency people read it, so do
 
 ## Daily run
 
-For the daily sweep, Scott runs `sh ~/Code/nagomi/install-daily.sh` once from his own shell. It installs a launchd job that runs Job 5 headless with `claude -p` at 7:30am on weekdays and emails the digest. `install-daily.sh --digest-only` installs the old script-only email instead (no Slack or email sweep).
+For the daily sweep, the user runs `sh <this skill's base directory>/install-daily.sh you@example.com` once from their own shell. It installs a launchd job that runs Job 5 headless with `claude -p` at 7:30am on weekdays and emails the digest. `install-daily.sh --digest-only` installs the old script-only email instead (no Slack or email sweep).
 
 ## Later
 
-- Post the channel update without approval, once Scott trusts the format.
+- Post the channel update without approval, once the user trusts the format.
 - Verify Done when against the site (Pressable via context-a8c `team51`, or WP-CLI) before marking a task Done.
 - Estimate from history: compare Days left at start vs. actual across finished projects.

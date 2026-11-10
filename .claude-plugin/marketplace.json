@@ -1,0 +1,19 @@
+{
+  "name": "nagomi",
+  "owner": {
+    "name": "Scott Massey",
+    "email": "scott.massey@automattic.com"
+  },
+  "description": "Nagomi (和み), the AI project manager for WooEnterprise store builds.",
+  "plugins": [
+    {
+      "name": "nagomi",
+      "source": "./",
+      "description": "Critical Chain project management for WooEnterprise builds, run from the customer's scoping sheet.",
+      "version": "0.3.0",
+      "author": {
+        "name": "Scott Massey"
+      }
+    }
+  ]
+}

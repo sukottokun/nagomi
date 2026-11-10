@@ -1,0 +1,13 @@
+{
+  "name": "nagomi",
+  "description": "Nagomi (和み): the AI project manager for WooEnterprise store builds. Critical Chain planning inside the customer's scoping sheet, buffer tracking, and a daily sweep of the P2, Slack, email and calls.",
+  "version": "0.3.0",
+  "author": {
+    "name": "Scott Massey",
+    "email": "scott.massey@automattic.com"
+  },
+  "homepage": "https://github.com/sukottokun/nagomi",
+  "repository": "https://github.com/sukottokun/nagomi",
+  "license": "UNLICENSED",
+  "keywords": ["woocommerce", "project-management", "critical-chain", "wooenterprise"]
+}
